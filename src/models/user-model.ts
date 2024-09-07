@@ -10,10 +10,12 @@ const userSchema = new Schema<UserType>(
     gender: { type: String, enum: ['male', 'female'] },
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: true, unique: true },
-    role: { type: String, enum: UserRole, required: true },
+    role: { type: String, enum: UserRole, default: UserRole.RESIDENT },
     status: { type: String, enum: UserStatus, default: UserStatus.ACTIVE },
     dob: { type: Date, required: true },
     profile: { type: String },
+    houseNo: { type: Number },
+    streetNo: { type: String },
   },
   {
     timestamps: true,

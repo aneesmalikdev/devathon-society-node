@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongoose'
+
 export enum BillType {
   Electricity = 'electricity',
   Water = 'water',
@@ -16,5 +18,7 @@ export interface IBill extends Document {
   type: BillType
   status: BillStatus
   paidAt?: Date
+  paymentId?: ObjectId
   dueDate: Date
+  residentId: ObjectId
 }

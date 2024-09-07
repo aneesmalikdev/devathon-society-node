@@ -21,4 +21,6 @@ export interface UserType extends Document {
   status: UserStatus
   dob: Date
   profile: string
+  houseNo?: number
+  streetNo?: string
 }

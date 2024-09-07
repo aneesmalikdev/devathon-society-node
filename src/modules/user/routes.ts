@@ -8,6 +8,6 @@ const router = Router()
 router.post('/', guard(), execute(createUser))
 router.put('/', guard(), execute(updateUser))
 router.get('/me', guard(), execute(getUserDetails))
-router.get('/', guard(UserRole.ADMIN), execute(getUsers))
+router.get('/', guard(), execute(getUsers))
 
 export default router

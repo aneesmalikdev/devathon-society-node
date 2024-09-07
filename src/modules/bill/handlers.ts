@@ -5,3 +5,8 @@ export async function createBill(ctx: RequestAuth, payload: any) {
   const bill = await BillModel.create(payload)
   return bill
 }
+
+export async function getAllBills(ctx: RequestAuth, payload: any) {
+  const bills = await BillModel.find({})
+  return bills
+}

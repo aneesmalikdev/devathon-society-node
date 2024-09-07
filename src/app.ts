@@ -5,6 +5,7 @@ import express from 'express'
 import mongoose from 'mongoose'
 import routes from './modules/index.js'
 import Logger from './utils/logger.js'
+import { firebase } from './connections/firebase.js'
 
 dotenv.config()
 

@@ -1,8 +1,60 @@
 import { NextFunction, Request, Response } from 'express'
+import errors from 'http-errors'
+import { firebase } from '../connections/firebase.js'
+import Logger from '../utils/logger.js'
+import { UserModel } from '../models/user-model.js'
+import { UserRole } from '../types/user-types.js'
 
-function guard(req: Request, res: Response, next: NextFunction) {
-  const token = req.headers.authorization
-  console.log({ token })
+//
+export class FirebaseAuthGuard {
+  static readonly headerKey: string = 'authorization'
+
+  guard(...roles: readonly string[]) {
+    return async function (req: Request, res: Response, next: NextFunction) {
+      const authToken = req.headers[FirebaseAuthGuard.headerKey]
+
+      if (authToken == undefined) {
+        return res.send(new errors.Unauthorized('Authorization token missing'))
+      }
+
+      let decodedToken
+      try {
+        decodedToken = await firebase.auth.verifyIdToken(authToken as string)
+      } catch (error) {
+        Logger.error(`Auth token verification failed: ${JSON.stringify(error)}`)
+        return res.send(new errors.Unauthorized('Auth token verification failed'))
+      }
+      const [fireUser, user] = await Promise.all([
+        firebase.auth.getUser(decodedToken.uid),
+        UserModel.exists({ firebaseId: decodedToken.uid }),
+      ])
+      if (fireUser.disabled) {
+        throw new errors.BadRequest(
+          'Your account is disabled. Please contact support to activate your account'
+        )
+      }
+      const artifacts: any = {
+        firebaseId: decodedToken.uid,
+        userId: user?._id,
+        isAdmin: decodedToken.isAdmin ?? false,
+        isResident: decodedToken.isResident ?? false,
+        isSupport: decodedToken.isSupport ?? false,
+      }
+
+      if (roles != undefined && roles.length > 0) {
+        const adminAllowed = decodedToken.isAdmin && roles.includes(UserRole.ADMIN)
+        const residentAllowed = decodedToken.isGuardian && roles.includes(UserRole.RESIDENT)
+        const supportAllowed = decodedToken.isOrganizer && roles.includes(UserRole.RESIDENT)
+
+        if (!(adminAllowed || residentAllowed || supportAllowed)) {
+          return res.send(new errors.Forbidden('You are not allowed to perform this action'))
+        }
+      }
+
+      ;(req as any).artifacts = artifacts
+      next()
+    }
+  }
 }
 
-export default guard
+export default new FirebaseAuthGuard().guard

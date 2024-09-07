@@ -6,14 +6,15 @@ export enum UserRole {
   SUPORT = 'support',
 }
 export enum UserStatus {
-    ACTIVE = 'active',
-    INACTIVE = 'inactive',
-    PENDING = 'pending',
-  
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  PENDING = 'pending',
 }
 export interface UserType extends Document {
+  firebaseId: string
   firstName: string
   lastName: string
+  gender: 'male' | 'female'
   email: string
   phone: string
   role: UserRole

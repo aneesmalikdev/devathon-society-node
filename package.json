@@ -2,9 +2,14 @@
   "name": "devathon-society-node",
   "version": "1.0.0",
   "description": "Backend of Devathon Socity Management System",
-  "main": "app.js",
+  "main": "build/app.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npx tsc",
+    "start": "node build/app.js",
+    "dev": "nodemon src/app.ts",
+    "dev:test": "nodemon -I — exec node — experimental-specifier-resolution=node — loader ts-node/esm ./src/app.ts",
+    "dev:t": "nodemon -I --exec node --no-warnings --experimental-specifier-resolution=node --loader ts-node/esm src/app.ts"
   },
   "author": "",
   "license": "ISC",
@@ -24,6 +29,8 @@
     "errorhandler": "^1.5.1",
     "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.5.4"
-  }
+  },
+  "exports": "./build/app.js"
 }
